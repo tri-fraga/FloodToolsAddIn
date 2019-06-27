@@ -42,9 +42,6 @@
       <HintPath>..\..\..\..\..\..\Program Files (x86)\TRICENTIS\Tosca Testsuite\ToscaCommander\BusinessObjects.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="ClearScript, Version=5.5.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ClearScript.5.5.6\lib\net45\ClearScript.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -71,24 +68,8 @@
     <Compile Include="FloodTools\FloodToolHelper.cs" />
     <Compile Include="FloodTools\Tasks\ExportAutomationObjectsJsonTask.cs" />
     <Compile Include="FloodTools\FloodToolsAddIn.cs" />
-    <Compile Include="FloodTools\Tasks\ExportElementJsTask.cs" />
     <Compile Include="FloodTools\Tasks\Interceptors\ExecutionListTaskInterceptor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Tricentis.FloodTools.tosca2element.js">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\Microsoft.ClearScript.5.5.6\build\Microsoft.ClearScript.targets" Condition="Exists('..\packages\Microsoft.ClearScript.5.5.6\build\Microsoft.ClearScript.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Microsoft.ClearScript.5.5.6\build\Microsoft.ClearScript.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.ClearScript.5.5.6\build\Microsoft.ClearScript.targets'))" />
-  </Target>
 </Project>

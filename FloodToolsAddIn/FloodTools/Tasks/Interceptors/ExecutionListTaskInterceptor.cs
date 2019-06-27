@@ -17,7 +17,6 @@ namespace Tricentis.TCAddIns.FloodTools.Tasks.Interceptors
             if (obj is ExecutionList || obj is ExecutionEntry)
             {
                 tasks.Add(TaskFactory.Instance.GetTask<ExportAutomationObjectsJsonTask>());
-                tasks.Add(TaskFactory.Instance.GetTask<ExportElementJsTask>());
             }
                 
         }
