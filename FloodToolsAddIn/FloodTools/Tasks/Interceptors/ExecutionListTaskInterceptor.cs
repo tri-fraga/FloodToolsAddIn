@@ -14,7 +14,7 @@ namespace Tricentis.TCAddIns.FloodTools.Tasks.Interceptors
 
         public override void GetTasks(PersistableObject obj, List<Task> tasks)
         {
-            if (obj is ExecutionList || obj is ExecutionEntry)
+            if (obj is ExecutionList)
             {
                 tasks.Add(TaskFactory.Instance.GetTask<ExportAutomationObjectsJsonTask>());
                 tasks.Add(TaskFactory.Instance.GetTask<ExportElementJsTask>());

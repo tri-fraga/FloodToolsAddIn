@@ -1,7 +1,11 @@
-﻿using System.IO;
+﻿using System;
+using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Reflection;
-using Microsoft.ClearScript.V8;
+using System.Text;
+using Newtonsoft.Json;
 using Tricentis.Automation.Contract.Serialize;
 using Tricentis.Automation.TCAddIns.ExecutionAddIn.Execution.Builder;
 using Tricentis.TCCore.BusinessObjects.ExecutionLists;
@@ -12,6 +16,8 @@ namespace Tricentis.TCAddIns.FloodTools.Tasks
 {
     public class ExportElementJsTask : Task
     {
+        public static readonly string Tosca2ElementUrl = "https://tosca2element.flood.io";
+
         public override string Name => "Export Element Script";
 
         public override TaskGroup Group => TaskGroup.Advanced;
@@ -20,22 +26,39 @@ namespace Tricentis.TCAddIns.FloodTools.Tasks
 
         public override object Execute(PersistableObject obj, ITaskContext context)
         {
-            var dllDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            var tosca2ElementScript = File.ReadAllText(dllDir + @"\Tricentis.FloodTools.tosca2element.js");
-            var toscaJson = FloodToolHelper.ExecutionToJson(obj);
-            var element = "";
+            var filePath = context.GetFilePath("Save ElementJs", false, "%TOSCA_PROJECTS%", false, "ts", true);
 
-            using (var engine = new V8ScriptEngine())
+            context.ShowWaitCursor();
+            context.ShowProgressInfo(100, 10, "Generating Json");
+            var toscaJson = FloodToolHelper.ExecutionToJson(obj);
+
+            try
             {
-                engine.Execute("window = {};");
-                engine.Evaluate(tosca2ElementScript);
-                element = engine.Script.window.tosca2element(toscaJson);
+                context.ShowProgressInfo(100, 40, "Generating Element Script");
+                var jsonPostResponse = FloodToolHelper.MessagePost(Tosca2ElementUrl + "/generate", toscaJson);
+                dynamic postResponse = JsonConvert.DeserializeObject(jsonPostResponse);
+                var downloadPath = postResponse.scripts[0];
+
+                context.ShowProgressInfo(100, 70, "Downloading Element Script");
+                var elementJs = FloodToolHelper.MessageGet(Tosca2ElementUrl + downloadPath);
+
+                context.ShowProgressInfo(100, 90, "Saving Element Script");
+                File.AppendAllText(filePath, elementJs);
+
+                context.ShowProgressInfo(100, 100, "Element Script successfully generated");
+            }
+            catch (Exception e)
+            {
+                context.ShowErrorMessage("Error", "The element script could not be generated. " +
+                                                  "Check your internet conection or try it manually at https://tosca2element.flood.io \r\n" +
+                                                  "Error: '" + e.Message + "'");
             }
 
-            var filePath = context.GetFilePath("Save Element Script", false, "%TOSCA_PROJECTS%", false, "ts", true);
-            File.WriteAllText(filePath, element);
+            context.HideWaitCursor();
 
             return null;
         }
+
+
     }
 }
